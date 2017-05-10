@@ -1,6 +1,7 @@
 package univ.ajou.godoriapp;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,6 +13,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,7 +44,21 @@ public class MainActivity extends AppCompatActivity {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
         }
+        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+        if(pairedDevices.size()>0)
+        {
+            //페어링 된 장치가 있는경우
+            Toast.makeText(this, "연결 성공", Toast.LENGTH_SHORT).show();
+            Log.e("SDF", pairedDevices.toString());
+        }
+        else{
+            Toast.makeText(this, "Godori 와 BT pairing이 필요합니다", Toast.LENGTH_SHORT).show();
+            //없는경우
+        }
+
+
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
