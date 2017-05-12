@@ -12,20 +12,20 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
-    int REQUEST_ENABLE_BT = 999;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("Godori App");
+        toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -37,25 +37,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Bluetooth
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        if(!mBluetoothAdapter.isEnabled()) {
-            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-        }
-        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-        if(pairedDevices.size()>0)
-        {
-            //페어링 된 장치가 있는경우
-            Toast.makeText(this, "연결 성공", Toast.LENGTH_SHORT).show();
-            Log.e("SDF", pairedDevices.toString());
-        }
-        else{
-            Toast.makeText(this, "Godori 와 BT pairing이 필요합니다", Toast.LENGTH_SHORT).show();
-            //없는경우
-        }
-
+        Button btnRemote = (Button) findViewById(R.id.btn_remote_mirror);
+        btnRemote.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, bluetooth.class);
+                startActivity(i);
+            }
+        });
 
     }
 
@@ -82,16 +71,5 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.e("SDF", "SDF : "+requestCode+ " & resultCode : " +resultCode);
-        if(resultCode == REQUEST_ENABLE_BT) {
-            Toast.makeText(this, "굿 보이", Toast.LENGTH_SHORT).show();
-        }
-        else if(resultCode == RESULT_CANCELED) {
-            Toast.makeText(this, "블루투스 켜라 임마", Toast.LENGTH_SHORT).show();
-        }
 
-        super.onActivityResult(requestCode, resultCode, data);
-    }
 }

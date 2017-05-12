@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="univ.ajou.godoriapp">
 
+    <uses-sdk
+        android:minSdkVersion="=8"
+        android:targetSdkVersion="21" />
+
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
@@ -22,6 +26,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".RemoteActivity"
+            android:label="@string/title_activity_remote"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".bluetooth"></activity>
     </application>
 
 </manifest>

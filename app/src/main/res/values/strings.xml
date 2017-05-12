@@ -1,4 +1,10 @@
 <resources>
-    <string name="app_name">GodoriApp</string>
+    <string name="app_name">Godori App</string>
     <string name="action_settings">Settings</string>
+    <string name="msg_connect_success">연결 성공</string>
+    <string name="toolbar_title_remote">Remote Mirror</string>
+    <string name="toolbar_title_gallery">Gallery</string>
+    <string name="title_activity_remote">RemoteActivity</string>
+
+
 </resources>
