@@ -1,21 +1,15 @@
 package univ.ajou.godoriapp;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
-
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,11 +31,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button btnRemote = (Button) findViewById(R.id.btn_remote_mirror);
+        Button btnRemote = (Button) findViewById(R.id.btn_remote);
+        Button btnGallery = (Button) findViewById(R.id.btn_gallery);
         btnRemote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(MainActivity.this, bluetooth.class);
+                startActivity(i);
+            }
+        });
+        btnGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, GalleryActivity.class);
                 startActivity(i);
             }
         });
