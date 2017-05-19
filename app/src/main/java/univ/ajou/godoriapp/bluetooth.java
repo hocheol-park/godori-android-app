@@ -21,20 +21,33 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcel;
 import android.os.ParcelUuid;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 
 
 
-public class bluetooth extends Activity {
+public class bluetooth extends AppCompatActivity {
     // 사용자 정의 함수로 블루투스 활성 상태의 변경 결과를 App으로 알려줄때 식별자로 사용됨(0보다 커야함)
     static final int REQUEST_ENABLE_BT = 10;
     int mPariedDeviceCount = 0;
     Set<BluetoothDevice> mDevices;
+
+    static final String CODE_LEFT = "LEFT";
+    static final String CODE_RIGHT = "RIGHT";
+    static final String CODE_TOP = "TOP";
+    static final String CODE_BOTTOM = "BOTTOM";
+    static final String CODE_OK = "OK";
+    static final String CODE_RW = "RW";
+    static final String CODE_PLAY = "PLAY";
+    static final String CODE_FF = "FF";
 
     // 폰의 블루투스 모듈을 사용하기 위한 오브젝트.
     BluetoothAdapter mBluetoothAdapter;
@@ -58,33 +71,118 @@ public class bluetooth extends Activity {
     byte[] readBuffer;
     int readBufferPosition;
 
-    EditText mEditReceive, mEditSend;
-    Button mButtonSend;
+    ImageButton btnLeft, btnRight, btnTop, btnBottom, btnOk, btnRW, btnPlay, btnFF;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_remote);
+        setContentView(R.layout.activity_remote_mirror);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(R.string.toolbar_title_remote);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mEditReceive = (EditText)findViewById(R.id.receiveString);
-        mEditSend = (EditText)findViewById(R.id.sendString);
-        mButtonSend = (Button)findViewById(R.id.sendButton);
+        btnLeft = (ImageButton)findViewById(R.id.btn_left);
 
-        mButtonSend.setOnClickListener(new OnClickListener(){
+        btnLeft.setOnClickListener(new OnClickListener(){
 
             @Override
             public void onClick(View v) {
                 // 문자열 전송하는 함수(쓰레드 사용 x)
-                sendData(mEditSend.getText().toString());
-                mEditSend.setText("");
+                sendData(CODE_LEFT);
             }
         });
 
+        btnRight = (ImageButton)findViewById(R.id.btn_right);
+
+        btnRight.setOnClickListener(new OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                // 문자열 전송하는 함수(쓰레드 사용 x)
+                sendData(CODE_RIGHT);
+            }
+        });
+
+        btnTop = (ImageButton)findViewById(R.id.btn_top);
+
+        btnTop.setOnClickListener(new OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                // 문자열 전송하는 함수(쓰레드 사용 x)
+                sendData(CODE_TOP);
+            }
+        });
+
+        btnBottom = (ImageButton)findViewById(R.id.btn_bottom);
+
+        btnBottom.setOnClickListener(new OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                // 문자열 전송하는 함수(쓰레드 사용 x)
+                sendData(CODE_BOTTOM);
+            }
+        });
+
+        btnOk = (ImageButton)findViewById(R.id.btn_Ok);
+
+        btnOk.setOnClickListener(new OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                // 문자열 전송하는 함수(쓰레드 사용 x)
+                sendData(CODE_OK);
+            }
+        });
+
+        btnRW = (ImageButton)findViewById(R.id.btn_rw);
+
+        btnRW.setOnClickListener(new OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                // 문자열 전송하는 함수(쓰레드 사용 x)
+                sendData(CODE_RW);
+            }
+        });
+
+        btnPlay = (ImageButton)findViewById(R.id.btn_play);
+
+        btnPlay.setOnClickListener(new OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                // 문자열 전송하는 함수(쓰레드 사용 x)
+                sendData(CODE_PLAY);
+            }
+        });
+
+        btnFF = (ImageButton)findViewById(R.id.btn_ff);
+
+        btnFF.setOnClickListener(new OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                // 문자열 전송하는 함수(쓰레드 사용 x)
+                sendData(CODE_FF);
+            }
+        });
         // 블루투스 활성화 시키는 메소드
         checkBluetooth();
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+        }
 
+        return super.onOptionsItemSelected(item);
+    }
     // 블루투스 장치의 이름이 주어졌을때 해당 블루투스 장치 객체를 페어링 된 장치 목록에서 찾아내는 코드.
     BluetoothDevice getDeviceFromBondedList(String name) {
         // BluetoothDevice : 페어링 된 기기 목록을 얻어옴.
@@ -122,16 +220,18 @@ public class bluetooth extends Activity {
         // BluetoothDevice 원격 블루투스 기기를 나타냄.
         mRemoteDevie = getDeviceFromBondedList(selectedDeviceName);
         // java.util.UUID.fromString : 자바에서 중복되지 않는 Unique 키 생성.
-       // UUID uuid = java.util.UUID.fromString("00000000-0000-1000-8000-00805f9b34fb");
-        ParcelUuid[] uuids = mRemoteDevie.getUuids();
+        //UUID uuid = java.util.UUID.fromString("00000003-0000-1000-8000-00805F9B34FB");
+        UUID uuid = java.util.UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+        //ParcelUuid[] uuids = mRemoteDevie.getUuids();
         try {
             // 소켓 생성, RFCOMM 채널을 통한 연결.
             // createRfcommSocketToServiceRecord(uuid) : 이 함수를 사용하여 원격 블루투스 장치와
             //                                           통신할 수 있는 소켓을 생성함.
             // 이 메소드가 성공하면 스마트폰과 페어링 된 디바이스간 통신 채널에 대응하는
             //  BluetoothSocket 오브젝트를 리턴함.
-            //mSocket = mRemoteDevie.createRfcommSocketToServiceRecord(uuid);
-            mSocket = mRemoteDevie.createRfcommSocketToServiceRecord(uuids[0].getUuid());
+            mSocket = mRemoteDevie.createRfcommSocketToServiceRecord(uuid);
+           // mSocket =(BluetoothSocket) mRemoteDevie.getClass().getMethod("createRfcommSocket", new Class[] {int.class}).invoke(mRemoteDevie,1); //??
+           // mSocket = mRemoteDevie.createRfcommSocketToServiceRecord(uuids[0].getUuid()); //해당 uuid받아오는 코드
             mSocket.connect(); // 소켓이 생성 되면 connect() 함수를 호출함으로써 두기기의 연결은 완료된다.
 
             // 데이터 송수신을 위한 스트림 얻기.
@@ -191,7 +291,7 @@ public class bluetooth extends Activity {
                                         @Override
                                         public void run() {
                                             // mStrDelimiter = '\n';
-                                            mEditReceive.setText(mEditReceive.getText().toString() + data+ mStrDelimiter);
+                                            //mEditReceive.setText(mEditReceive.getText().toString() + data+ mStrDelimiter);
                                         }
 
                                     });
@@ -259,7 +359,7 @@ public class bluetooth extends Activity {
 
         });
 
-        builder.setCancelable(false);  // 뒤로 가기 버튼 사용 금지.
+        builder.setCancelable(true);  // 뒤로 가기 버튼 사용 허용.
         AlertDialog alert = builder.create();
         alert.show();
     }

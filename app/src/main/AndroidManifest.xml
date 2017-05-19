@@ -36,7 +36,8 @@
             android:label="@string/title_activity_remote"
             android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
-            android:name=".bluetooth"></activity>
+            android:name=".bluetooth"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
