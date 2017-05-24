@@ -21,8 +21,8 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
-        android:layout_width="match_parent"
         android:id="@+id/nestedscrollview"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -38,10 +38,9 @@
                 android:id="@+id/gridview"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:columnWidth="100dp"
                 android:gravity="center"
                 android:listSelector="#00000000"
-                android:numColumns="auto_fit"
+                android:numColumns="3"
                 android:stretchMode="columnWidth" />
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
