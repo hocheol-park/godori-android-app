@@ -1,5 +1,6 @@
 package univ.ajou.godoriapp;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -105,7 +106,7 @@ public class GalleryActivity extends AppCompatActivity {
                 if (convertView == null) {
                     holder = new ViewHolder();
                     convertView = getLayoutInflater().inflate(R.layout.list_gallery, null);
-                    convertView.setLayoutParams(new GridView.LayoutParams(300, 300));
+                    convertView.setLayoutParams(new GridView.LayoutParams(300, 500));
                     holder.name = (TextView) convertView.findViewById(R.id.file_name);
                     holder.image = (ImageView) convertView.findViewById(R.id.file_image);
 
@@ -115,8 +116,25 @@ public class GalleryActivity extends AppCompatActivity {
                 }
 
                 try {
-                    holder.name.setText(json.getString("name"));
-                    Picasso.with(getApplicationContext()).load(json.getString("url")).into(holder.image);
+                    final String name = json.getString("name");
+                    final String fullurl = json.getString("url");
+
+                    holder.name.setText(name);
+                    Picasso.with(getApplicationContext()).load(json.getString("thumbnail")).into(holder.image);
+                    holder.image.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            final ImageViewDialog dialog = new ImageViewDialog(GalleryActivity.this);
+                            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                                @Override
+                                public void onShow(DialogInterface dialogInterface) {
+                                    dialog.setImage(fullurl);
+                                    dialog.setName(name);
+                                }
+                            });
+                            dialog.show();
+                        }
+                    });
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

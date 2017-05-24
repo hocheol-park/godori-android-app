@@ -35,9 +35,12 @@
             android:name=".RemoteActivity"
             android:label="@string/title_activity_remote"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity
-            android:name=".bluetooth"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+
     </application>
+    <service
+        android:name=".BTService"
+        android:label="BTService"
+        ></service>
+
 
 </manifest>
