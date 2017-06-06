@@ -40,6 +40,10 @@
             android:label="@string/title_activity_remote"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
+        <activity
+            android:name=".util.TedPermissionActivity"
+            android:launchMode="singleTask"/>
+
     </application>
 
 

@@ -1,16 +1,21 @@
 package univ.ajou.godoriapp;
 
+import android.Manifest;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+
+import univ.ajou.godoriapp.util.PermissionListener;
+import univ.ajou.godoriapp.util.TedPermission;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        checkPermission();
     }
 
     @Override
@@ -67,6 +73,40 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public PermissionListener permissionlistener;
+    public void checkPermission() {
+
+        permissionlistener = new PermissionListener() {
+            @Override
+            public void onPermissionGranted() {
+                // WHAT
+            }
+
+            @Override
+            public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+                Toast.makeText(MainActivity.this, "You must agree the permission" , Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        };
+
+        // 마시멜로우 이상 버전의 경우 체크.
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            new TedPermission(this)
+                    .setPermissionListener(permissionlistener)
+                    .setDeniedMessage("You must agree the permission")
+                    .setPermissions(
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.RECORD_AUDIO
+                    )
+                    .check();
+        }
+        else {
+            // WHAT
+        }
+
     }
 
 

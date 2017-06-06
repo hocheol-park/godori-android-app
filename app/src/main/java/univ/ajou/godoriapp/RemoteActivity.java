@@ -3,16 +3,6 @@ package univ.ajou.godoriapp;
 /**
  * Created by SUNGMIN on 2017-05-12.
  */
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
-import android.app.Activity;
-
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -23,22 +13,26 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Parcel;
-import android.os.ParcelUuid;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.naver.speech.clientapi.SpeechRecognitionResult;
+
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import univ.ajou.godoriapp.util.AudioWriterPCM;
 
@@ -70,7 +64,7 @@ public class RemoteActivity extends AppCompatActivity {
 
     //음성인식 API
     private static final String TAG = RemoteActivity.class.getSimpleName();
-    private static final String CLIENT_ID = ""; // "내 애플리케이션"에서 Client ID를 확인해서 이곳에 적어주세요.
+    private static final String CLIENT_ID = "LoY3G5tvUUvi8TrOpsyV"; // "내 애플리케이션"에서 Client ID를 확인해서 이곳에 적어주세요.
     private RecognitionHandler handler;
     private NaverRecognizer naverRecognizer;
     private TextView txtResult;
