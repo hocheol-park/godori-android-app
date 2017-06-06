@@ -25,7 +25,7 @@ import univ.ajou.godoriapp.util.HttpConnector;
 
 public class GalleryActivity extends AppCompatActivity {
 
-    private static String S3_GET_LIST = "https://5uwrj54ff1.execute-api.us-east-1.amazonaws.com/dev/images";
+    private static String S3_GET_LIST = "https://4n54wpk7kd.execute-api.us-east-1.amazonaws.com/dev/images";
 
     private GridView gridView;
     private JsonArrayAdapter adapter;

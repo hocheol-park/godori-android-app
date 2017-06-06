@@ -5,12 +5,14 @@ package univ.ajou.godoriapp;
  */
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import android.app.Activity;
+
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -18,11 +20,14 @@ import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.os.Parcel;
 import android.os.ParcelUuid;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,9 +35,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.naver.speech.clientapi.SpeechRecognitionResult;
 
+import univ.ajou.godoriapp.util.AudioWriterPCM;
 
 
 public class RemoteActivity extends AppCompatActivity {
@@ -50,7 +58,77 @@ public class RemoteActivity extends AppCompatActivity {
     static final String CODE_RW = "RW";
     static final String CODE_PLAY = "PLAY";
     static final String CODE_FF = "FF";
+    static final String CODE_VOICE = "VO";
+    static final String CODE_VIDEO = "VIDEO";
+    static final String CODE_CAMERA = "CAMERA";
+    static final String CODE_VIRTUAL = "VIRTUAL";
+    static final String CODE_GALLERY = "GALLERY";
+    // 넘기는 STRING 정의
 
+    String[] voiceCommand = {"비디오", "카메라", "가상", "갤러리", "시작", "재생", "중지", "멈춰", "빨리감기", "되감기"};
+    String[] voiceCommandCode = {CODE_VIDEO, CODE_CAMERA, CODE_VIRTUAL, CODE_GALLERY, CODE_PLAY, CODE_PLAY, CODE_PLAY, CODE_PLAY, CODE_FF, CODE_RW};
+
+    //음성인식 API
+    private static final String TAG = RemoteActivity.class.getSimpleName();
+    private static final String CLIENT_ID = ""; // "내 애플리케이션"에서 Client ID를 확인해서 이곳에 적어주세요.
+    private RecognitionHandler handler;
+    private NaverRecognizer naverRecognizer;
+    private TextView txtResult;
+    private String mResult;
+    private AudioWriterPCM writer;
+    // Handle speech recognition Messages.
+
+    private void handleMessage(Message msg) {
+        switch (msg.what) {
+            case R.id.clientReady: // 음성인식 준비 가능
+                txtResult.setText("Connected");
+                writer = new AudioWriterPCM(Environment.getExternalStorageDirectory().getAbsolutePath() + "/NaverSpeechTest");
+                writer.open("Test");
+                break;
+            case R.id.audioRecording:
+                writer.write((short[]) msg.obj);
+                break;
+            case R.id.partialResult:
+                mResult = (String) (msg.obj);
+                //txtResult.setText(mResult);
+                break;
+            case R.id.finalResult: // 최종 인식 결과
+                SpeechRecognitionResult speechRecognitionResult = (SpeechRecognitionResult) msg.obj;
+                List<String> results = speechRecognitionResult.getResults();
+                StringBuilder strBuf = new StringBuilder();
+                for(String result : results) {
+                    strBuf.append(result);
+                    strBuf.append("\n");
+                }
+                mResult = strBuf.toString();
+
+                for(int i=0; i<voiceCommand.length; i++) {
+                    if(mResult.contains(voiceCommand[i])) {
+                        Log.e(TAG, "SEND TO RASPBERRY CODE :: "+voiceCommandCode[i]);
+                        sendData(voiceCommandCode[i]);
+                    }
+                }
+
+                txtResult.setText(mResult);
+
+                break;
+            case R.id.recognitionError:
+                if (writer != null) {
+                    writer.close();
+                }
+                mResult = "Error code : " + msg.obj.toString();
+                txtResult.setText(mResult);
+                //btnVoice.setEnabled(true);
+                break;
+            case R.id.clientInactive:
+                if (writer != null) {
+                    writer.close();
+                }
+                //btnVoice.setEnabled(true);
+                startVoiceRec();
+                break;
+        }
+    }
 
 
     // 폰의 블루투스 모듈을 사용하기 위한 오브젝트.
@@ -75,7 +153,7 @@ public class RemoteActivity extends AppCompatActivity {
     byte[] readBuffer;
     int readBufferPosition;
 
-    ImageButton btnLeft, btnRight, btnTop, btnBottom, btnOk, btnRW, btnPlay, btnFF,btnBack;
+    ImageButton btnLeft, btnRight, btnTop, btnBottom, btnOk, btnRW, btnPlay, btnFF,btnBack, btnVoice;
     ProgressBar pb;
 
 
@@ -179,8 +257,6 @@ public class RemoteActivity extends AppCompatActivity {
             }
         });
 
-
-
         btnBack = (ImageButton)findViewById(R.id.btn_back);
 
         btnBack.setOnClickListener(new OnClickListener(){
@@ -189,6 +265,24 @@ public class RemoteActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // 문자열 전송하는 함수(쓰레드 사용 x)
                 sendData(CODE_BACK);
+            }
+        });
+
+        txtResult = (TextView) findViewById(R.id.txtResult);
+        //음성인식 활성화 버튼
+        btnVoice = (ImageButton)findViewById(R.id.btn_voice);
+        handler = new RecognitionHandler(this);
+        naverRecognizer = new NaverRecognizer(this, handler, CLIENT_ID);
+        btnVoice.setOnClickListener(new OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                if(btnVoice.isSelected()) {
+                    stopVoiceRec();
+                }
+                else {
+                    startVoiceRec();
+                }
             }
         });
 
@@ -201,6 +295,59 @@ public class RemoteActivity extends AppCompatActivity {
             }
         }, 1000);
     }
+
+    private void startVoiceRec() {
+        naverRecognizer.getSpeechRecognizer().initialize();
+        if(!naverRecognizer.getSpeechRecognizer().isRunning()) {
+            mResult = "";
+            txtResult.setText("Connecting...");
+            naverRecognizer.recognize();
+            btnVoice.setSelected(true);
+        }
+    }
+
+    private void stopVoiceRec() {
+        naverRecognizer.getSpeechRecognizer().stop();
+        naverRecognizer.getSpeechRecognizer().release();
+        btnVoice.setSelected(false);
+        txtResult.setText("STOP VOICE");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart(); // 음성인식 서버 초기화는 여기서
+        naverRecognizer.getSpeechRecognizer().initialize();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mResult = "";
+        txtResult.setText("");
+
+        //btnVoice.setEnabled(true);
+    }
+    @Override
+    protected void onStop() {
+        super.onStop(); // 음성인식 서버 종료
+        naverRecognizer.getSpeechRecognizer().release();
+    }
+    // Declare handler for handling SpeechRecognizer thread's Messages.
+    static class RecognitionHandler extends Handler {
+        private final WeakReference<RemoteActivity> mActivity;
+        RecognitionHandler(RemoteActivity activity) {
+            mActivity = new WeakReference<RemoteActivity>(activity);
+        }
+        @Override
+        public void handleMessage(Message msg) {
+            RemoteActivity activity = mActivity.get();
+            if (activity != null) {
+                activity.handleMessage(msg);
+            }
+        }
+    }
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
@@ -211,6 +358,9 @@ public class RemoteActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
+
     // 블루투스 장치의 이름이 주어졌을때 해당 블루투스 장치 객체를 페어링 된 장치 목록에서 찾아내는 코드.
     BluetoothDevice getDeviceFromBondedList(String name) {
         // BluetoothDevice : 페어링 된 기기 목록을 얻어옴.
@@ -278,7 +428,7 @@ public class RemoteActivity extends AppCompatActivity {
             e.printStackTrace();
             Toast.makeText(getApplicationContext(),
                     "블루투스 연결 중 오류가 발생했습니다.", Toast.LENGTH_LONG).show();
-            finish();  // App 종료
+            //finish();  // App 종료
         }
     }
 
