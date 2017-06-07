@@ -57,10 +57,11 @@ public class RemoteActivity extends AppCompatActivity {
     static final String CODE_CAMERA = "CAMERA";
     static final String CODE_VIRTUAL = "VIRTUAL";
     static final String CODE_GALLERY = "GALLERY";
+    static final String CODE_REAR = "REAR";
     // 넘기는 STRING 정의
 
-    String[] voiceCommand = {"비디오", "카메라", "가상", "갤러리", "시작", "재생", "중지", "멈춰", "빨리감기", "되감기"};
-    String[] voiceCommandCode = {CODE_VIDEO, CODE_CAMERA, CODE_VIRTUAL, CODE_GALLERY, CODE_PLAY, CODE_PLAY, CODE_PLAY, CODE_PLAY, CODE_FF, CODE_RW};
+    String[] voiceCommand = {"비디오", "카메라", "가상", "갤러리", "시작", "재생", "중지", "정지", "멈춰", "빨리감기", "빨리", "앞으로", "되감기", "뒤로", "김치", "뒷모습"};
+    String[] voiceCommandCode = {CODE_VIDEO, CODE_CAMERA, CODE_VIRTUAL, CODE_GALLERY, CODE_PLAY, CODE_PLAY, CODE_PLAY, CODE_PLAY, CODE_PLAY, CODE_FF, CODE_FF, CODE_FF, CODE_RW, CODE_RW, CODE_OK, CODE_REAR};
 
     //음성인식 API
     private static final String TAG = RemoteActivity.class.getSimpleName();
