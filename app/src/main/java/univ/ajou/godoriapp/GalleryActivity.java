@@ -1,6 +1,7 @@
 package univ.ajou.godoriapp;
 
 import android.content.DialogInterface;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -106,7 +107,7 @@ public class GalleryActivity extends AppCompatActivity {
                 if (convertView == null) {
                     holder = new ViewHolder();
                     convertView = getLayoutInflater().inflate(R.layout.list_gallery, null);
-                    convertView.setLayoutParams(new GridView.LayoutParams(300, 500));
+                    convertView.setLayoutParams(new GridView.LayoutParams(300, 330));
                     holder.name = (TextView) convertView.findViewById(R.id.file_name);
                     holder.image = (ImageView) convertView.findViewById(R.id.file_image);
 
@@ -125,6 +126,7 @@ public class GalleryActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View view) {
                             final ImageViewDialog dialog = new ImageViewDialog(GalleryActivity.this);
+                            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
                             dialog.setOnShowListener(new DialogInterface.OnShowListener() {
                                 @Override
                                 public void onShow(DialogInterface dialogInterface) {
